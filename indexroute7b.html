@@ -20,10 +20,11 @@
             flex-grow: 1;
             position: relative;
             display: none;
+            min-height: 0;
         }
         
         #cover-view.content-view {
-            display: flex;
+            display: flex; 
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -62,7 +63,6 @@
         #cover-text-2 { top: 42%; left: 35%; }
         #cover-text-3 { top: 25%; left: 85%; }
         #cover-text-4 { top: 80%; left: 15%; }
-        #cover-text-5 { top: 45%; left: 50%; }
 
         .cover-text-bg {
             background-color: rgba(0, 0, 0, 0.5);
@@ -110,22 +110,30 @@
         .modal-footer { font-size: clamp(0.7rem, 1.8vw, 0.9em); opacity: 0.8; }
         
         /* --- СТИЛИ ОБЩЕГО МЕНЮ --- */
-        .controls { flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px 15px; background: #f1f1f1; border-top: 1px solid #ddd; }
+        .controls { flex-shrink: 0; padding: 10px 15px; background: #f1f1f1; border-top: 1px solid #ddd; }
         .controls-label { color: #555; margin-bottom: 8px; font-weight: bold; text-align: center; font-size: clamp(0.9rem, 2.5vw, 1.2em); }
+        
         .controls-buttons { display: flex; justify-content: center; align-items: center; width: 100%; gap: 15px; flex-wrap: wrap; }
         .control-button-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .control-button-label { font-size: 1.0em; color: #555; text-align: center; line-height: 1.4; }
-        .controls button { background: #4285F4; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.3s, width 0.3s, height 0.3s, font-size 0.3s; }
+        .control-button-label { font-size: 0.7em; color: #555; text-align: center; line-height: 1.1; }
+        .controls button { background: #4285F4; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.3s; }
         .controls button:hover { background-color: #3367D6; }
         .controls button.nav-btn { background: #757575; width: 40px; height: 40px; font-size: 20px; }
         .controls button.nav-btn:hover { background-color: #555; }
-        #bookNowBtn { background-color: #28a745; }
-        #bookNowBtn:hover { background-color: #218838; }
+        .controls .book-now-btn { background-color: #28a745; }
+        .controls .book-now-btn:hover { background-color: #218838; }
         #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; }
-        
+
+        #mobile-controls { display: none; }
+        #pc-controls { display: flex; }
+
         /* --- АДАПТИВНОСТЬ --- */
         @media (max-width: 768px) {
+            #pc-controls { display: none; }
+            #mobile-controls { display: flex; }
+        
             .cover-text-box { font-size: 1em; }
+            /* ВОССТАНОВЛЕННЫЙ БЛОК */
             #cover-text-1 { top: 15%; left: 50%; }
             #cover-text-2 { top: 35%; left: 50%; }
             #cover-text-3 { top: 55%; left: 50%; }
@@ -138,17 +146,13 @@
             .modal-content { max-width: 95%; max-height: 90%; }
             .modal-close { top: 10px; right: 20px; font-size: 30px; }
             
-            /* Скрываем кнопки для ПК на мобильных устройствах */
-            .view-popup-btn,
-            #showDescriptionBtnWrapper {
-                display: none;
-            }
+            .view-popup-btn { display: none; }
         }
     </style>
 </head>
 <body>
     <div id="cover-view" class="content-view">
-        <video id="cover-video" autoplay loop muted playsinline src="https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%207.%20%D0%AF%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0%20-%20%D0%95%D0%BA%D0%B5%D0%BD%D1%87%D0%B8%D0%BA.%202%20%D0%B4%D0%BD%D1%8F%20%D0%B8%201%20%D0%BD%D0%BE%D1%87%D1%8C..mp4"></video>
+        <video id="cover-video" autoplay loop muted playsinline></video>
         <div id="cover-text-1" class="cover-text-box" data-visible="true" data-tooltip="Мармарис, здесь вы скорее всего проживаете.">
             <span class="cover-text-bg">МАРМАРИС</span>
         </div>
@@ -166,7 +170,7 @@
 
     <div id="book-view" class="content-view">
         <div class="page-viewer">
-            <div class="page active" data-page-number="1">
+            <div class="page" data-page-number="1">
                 <div class="button-container">
                     <button class="view-video-btn">Видео</button>
                     <button class="view-popup-btn">Открыть в окне</button>
@@ -185,27 +189,44 @@
     
     <div class="controls">
         <div class="controls-label">Маршрут 7. Яхтенный тур под парусом Мармарис Яхт Марина - Екенчик. 2 дня и 1 ночь.</div>
-        <div class="controls-buttons">
+        
+        <div class="controls-buttons" id="pc-controls">
             <div class="control-button-wrapper">
-                <button id="prevBtn" class="nav-btn">◄</button>
+                <button id="prevBtnPc" class="nav-btn">◄</button>
                 <div class="control-button-label">Назад</div>
             </div>
             <div class="control-button-wrapper">
-                <button id="playPauseBtn">▶</button>
+                <button id="playPauseBtnPc">▶</button>
                 <div class="control-button-label">Слушать</div>
             </div>
-            <span id="pageIndicator"></span>
-            <div class="control-button-wrapper" id="showDescriptionBtnWrapper">
+            <span id="pageIndicatorPc"></span>
+            <div class="control-button-wrapper">
                 <button id="showDescriptionBtn">☰</button>
                 <div class="control-button-label">Описание<br>маршрута</div>
             </div>
             <div class="control-button-wrapper">
-                <button id="bookNowBtn">⚓</button>
+                <button id="bookNowBtnPc" class="book-now-btn">⚓</button>
                 <div class="control-button-label">Бронь</div>
             </div>
             <div class="control-button-wrapper">
-                <button id="nextBtn" class="nav-btn">►</button>
+                <button id="nextBtnPc" class="nav-btn">►</button>
                 <div class="control-button-label">Вперед</div>
+            </div>
+        </div>
+
+        <div class="controls-buttons" id="mobile-controls">
+            <div class="control-button-wrapper">
+                <button id="prevBtnMobile" class="nav-btn">◄</button>
+            </div>
+            <div class="control-button-wrapper">
+                <button id="playPauseBtnMobile">▶</button>
+            </div>
+            <span id="pageIndicatorMobile"></span>
+            <div class="control-button-wrapper">
+                <button id="bookNowBtnMobile" class="book-now-btn">⚓</button>
+            </div>
+            <div class="control-button-wrapper">
+                <button id="nextBtnMobile" class="nav-btn">►</button>
             </div>
         </div>
     </div>
@@ -224,6 +245,7 @@
         const CONFIG = {
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route7',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%827.mp3',
+            coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%207.%20%D0%AF%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0%20-%20%D0%95%D0%BA%D0%B5%D0%BD%D1%87%D0%B8%D0%BA.%202%20%D0%B4%D0%BD%D1%8F%20%D0%B8%201%20%D0%BD%D0%BE%D1%87%D1%8C..mp4',
             pages: [
                 {
                     pageNumber: 1,
@@ -238,6 +260,7 @@
             ]
         };
         
+        document.getElementById('cover-video').src = CONFIG.coverVideoUrl;
         document.getElementById('page-text-1').innerHTML = CONFIG.pages[0].text;
         document.getElementById('page-text-2').innerHTML = CONFIG.pages[1].text;
         const page1 = document.querySelector('.page[data-page-number="1"]');
@@ -250,10 +273,12 @@
         const coverView = document.getElementById('cover-view');
         const bookView = document.getElementById('book-view');
         const audioPlayer = document.getElementById('narrationAudio');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const pageIndicator = document.getElementById('pageIndicator');
+        const playPauseBtns = [document.getElementById('playPauseBtnPc'), document.getElementById('playPauseBtnMobile')];
+        const nextBtns = [document.getElementById('nextBtnPc'), document.getElementById('nextBtnMobile')];
+        const prevBtns = [document.getElementById('prevBtnPc'), document.getElementById('prevBtnMobile')];
+        const bookNowBtns = [document.getElementById('bookNowBtnPc'), document.getElementById('bookNowBtnMobile')];
+        const showDescriptionBtn = document.getElementById('showDescriptionBtn');
+        const pageIndicators = [document.getElementById('pageIndicatorPc'), document.getElementById('pageIndicatorMobile')];
         const pages = document.querySelectorAll('.page');
         let currentPage = 1;
         let isPlaying = false;
@@ -272,8 +297,10 @@
         }
         
         function updateButtonsAndIndicator() {
-            prevBtn.style.display = isCoverActive ? 'none' : 'flex';
-            pageIndicator.textContent = isCoverActive ? `0 / ${pages.length}` : `${currentPage} / ${pages.length}`;
+            prevBtns.forEach(btn => btn.style.display = isCoverActive ? 'none' : 'flex');
+            pageIndicators.forEach(indicator => {
+                if(indicator) indicator.textContent = isCoverActive ? `0 / ${pages.length}` : `${currentPage} / ${pages.length}`;
+            });
         }
 
         function handlePlayPause() {
@@ -284,25 +311,22 @@
                 audioPlayer.currentTime = 1.0; 
                 audioPlayer.play();
                 isPlaying = true;
-                playPauseBtn.textContent = '❚❚';
+                playPauseBtns.forEach(btn => btn.textContent = '❚❚');
                 showPage(1);
             } else {
-                if (isPlaying) {
-                    audioPlayer.pause();
-                } else {
-                    audioPlayer.play();
-                }
                 isPlaying = !isPlaying;
-                playPauseBtn.textContent = isPlaying ? '❚❚' : '▶';
+                if (isPlaying) {
+                    audioPlayer.play();
+                } else {
+                    audioPlayer.pause();
+                }
+                playPauseBtns.forEach(btn => btn.textContent = isPlaying ? '❚❚' : '▶');
             }
         }
         
         function handleNext() {
             if (isCoverActive) {
-                coverView.style.display = 'none';
-                bookView.style.display = 'flex';
-                isCoverActive = false;
-                showPage(1);
+                handlePlayPause();
             } else if (currentPage < pages.length) {
                 const nextPage = currentPage + 1;
                 showPage(nextPage);
@@ -322,7 +346,7 @@
                 isCoverActive = true;
                 audioPlayer.pause();
                 isPlaying = false;
-                playPauseBtn.textContent = '▶';
+                playPauseBtns.forEach(btn => btn.textContent = '▶');
                 updateButtonsAndIndicator();
             }
         }
@@ -333,22 +357,22 @@
             return prevPage ? prevPage.endTime : 1.0;
         }
 
-        playPauseBtn.addEventListener('click', handlePlayPause);
-        nextBtn.addEventListener('click', handleNext);
-        prevBtn.addEventListener('click', handlePrev);
+        playPauseBtns.forEach(btn => btn.addEventListener('click', handlePlayPause));
+        nextBtns.forEach(btn => btn.addEventListener('click', handleNext));
+        prevBtns.forEach(btn => btn.addEventListener('click', handlePrev));
         
         audioPlayer.addEventListener('timeupdate', () => {
             if (!isPlaying || isCoverActive) return;
             const currentTime = audioPlayer.currentTime;
             const targetPageData = pageMap.find(p => currentTime >= getPageStartTime(p.page) && currentTime < p.endTime) || pageMap[pageMap.length - 1];
-            if (targetPageData.page !== currentPage) {
+            if (targetPageData && targetPageData.page !== currentPage) {
                 showPage(targetPageData.page);
             }
         });
         
         audioPlayer.addEventListener('ended', () => {
             isPlaying = false;
-            playPauseBtn.textContent = '▶';
+            playPauseBtns.forEach(btn => btn.textContent = '▶');
             showPage(1);
             audioPlayer.currentTime = 1.0;
         });
@@ -371,7 +395,6 @@
                     modalVideo.loop = (pageNumber === 1); 
                     modal.style.display = 'flex';
                     modalVideo.src = videoSrc;
-                    modalVideo.setAttribute('title', routeTitle); 
                     modalHeader.textContent = routeTitle;
                     modalFooter.textContent = downloadInstruction;
                     modalVideo.play();
@@ -383,8 +406,6 @@
             modal.style.display = 'none';
             modalVideo.pause();
             modalVideo.src = ''; 
-            modalHeader.textContent = ''; 
-            modalFooter.textContent = ''; 
         }
 
         closeBtn.addEventListener('click', closeModal);
@@ -392,28 +413,16 @@
             if (event.target === modal) { closeModal(); }
         });
         
-        const showDescriptionBtn = document.getElementById('showDescriptionBtn');
-        const bookNowBtn = document.getElementById('bookNowBtn');
-
         showDescriptionBtn.addEventListener('click', () => {
-            const fullText = `
-                <h1>Описание маршрута</h1>
-                <div style="text-align: left; max-width: 800px; margin: 20px; font-family: sans-serif; line-height: 1.6;">
-                    <h2>Страница 1</h2>
-                    ${CONFIG.pages[0].text}
-                    <hr>
-                    <h2>Страница 2</h2>
-                    ${CONFIG.pages[1].text}
-                </div>
-            `;
+            const fullText = `<h1>Описание маршрута</h1><div style="text-align: left; max-width: 800px; margin: 20px; font-family: sans-serif; line-height: 1.6;"><h2>Страница 1</h2>${CONFIG.pages[0].text}<hr><h2>Страница 2</h2>${CONFIG.pages[1].text}</div>`;
             const popup = window.open('', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
             popup.document.write(fullText);
             popup.document.close();
         });
 
-        bookNowBtn.addEventListener('click', () => {
+        bookNowBtns.forEach(btn => btn.addEventListener('click', () => {
             window.open(CONFIG.bookingUrl, '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
-        });
+        }));
 
         const viewPopupBtns = document.querySelectorAll('.view-popup-btn');
         viewPopupBtns.forEach(btn => {
@@ -441,15 +450,10 @@
                     tooltipBox.classList.add('visible');
                     requestAnimationFrame(() => {
                       const tooltipWidth = tooltipBox.offsetWidth;
-                      const tooltipHeight = tooltipBox.offsetHeight;
-                      let top = rect.bottom + 10;
                       let left = rect.left + rect.width / 2 - tooltipWidth / 2;
-                      
                       if (left < 0) left = 5;
                       if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 5;
-                      if (top + tooltipHeight > window.innerHeight) top = rect.top - tooltipHeight - 10;
-                      
-                      tooltipBox.style.top = `${top}px`;
+                      tooltipBox.style.top = `${rect.bottom + 10}px`;
                       tooltipBox.style.left = `${left}px`;
                     });
                 });
@@ -458,9 +462,7 @@
                 });
             }
         });
-        
     });
     </script>
     </body>
-
 </html>
