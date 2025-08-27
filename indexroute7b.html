@@ -12,8 +12,8 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Фоллбэк для старых браузеров */
-            height: 100svh; /* Корректная высота для мобильных устройств */
+            height: 100vh;
+            height: 100svh;
         }
 
         .content-view {
@@ -57,11 +57,7 @@
             transition: opacity 0.5s, top 0.5s, left 0.5s;
         }
 
-        .cover-text-box[data-visible="false"] {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
+        .cover-text-box[data-visible="false"] { opacity: 0; pointer-events: none; }
         #cover-text-1 { top: 15%; left: 20%; }
         #cover-text-2 { top: 42%; left: 35%; }
         #cover-text-3 { top: 25%; left: 85%; }
@@ -74,31 +70,12 @@
             color: rgb(246, 238, 238);
             white-space: nowrap;
         }
-
-        /* --- СТИЛИ СТРЕЛОК --- */
-        .arrow { width: 0; height: 0; border-style: solid; }
-        .arrow-right { border-width: 10px 0 10px 15px; border-color: transparent transparent transparent #fff; }
-        .arrow-left { border-width: 10px 15px 10px 0; border-color: transparent #fff transparent transparent; }
-        .arrow-up { border-width: 0 10px 15px 10px; border-color: transparent transparent #fff transparent; }
-        .arrow-down { border-width: 15px 10px 0 10px; border-color: #fff transparent transparent transparent; }
         
-        /* --- СТИЛИ ВСПЛЫВАЮЩЕГО ОКНА (TOOLTIP) --- */
         #tooltip-box {
-            position: absolute;
-            z-index: 10;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.9em;
-            max-width: 250px;
-            text-align: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-            pointer-events: none;
-            left: 0;
-            top: 0;
+            position: absolute; z-index: 10; background-color: rgba(0, 0, 0, 0.7); color: white;
+            padding: 10px 15px; border-radius: 8px; font-size: 0.9em; max-width: 250px; text-align: center;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+            pointer-events: none; left: 0; top: 0;
         }
 
         #tooltip-box.visible { opacity: 1; visibility: visible; }
@@ -109,7 +86,6 @@
         .page.active { opacity: 1; visibility: visible; }
         .page p { margin-top: 15px; text-align: left; font-size: 1.1em; line-height: 1.6; color: #333; overflow-y: auto; width: 100%; padding-right: 10px; flex-grow: 1; min-height: 0; }
         
-        /* --- СТИЛИ ДЛЯ КНОПОК ВИДЕО (ВОССТАНОВЛЕНО) --- */
         .button-container { display: flex; gap: 10px; margin-bottom: 15px; }
         .view-video-btn, .view-popup-btn {
             border: none; border-radius: 8px; padding: 10px 20px; font-size: 1em; color: white;
@@ -120,7 +96,6 @@
         .view-popup-btn { background-color: #28a745; }
         .view-popup-btn:hover { background-color: #218838; }
         
-        /* Стили модального окна */
         .modal { 
             display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); 
             justify-content: center; align-items: center; flex-direction: column; gap: 10px; 
@@ -134,12 +109,12 @@
         .modal-header { font-weight: bold; }
         .modal-footer { font-size: clamp(0.7rem, 1.8vw, 0.9em); opacity: 0.8; }
         
-        /* --- СТИЛИ ОБЩЕГО МЕНЮ (ВСЕГДА ВИДНО) --- */
+        /* --- СТИЛИ ОБЩЕГО МЕНЮ --- */
         .controls { flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px 15px; background: #f1f1f1; border-top: 1px solid #ddd; }
         .controls-label { color: #555; margin-bottom: 8px; font-weight: bold; text-align: center; font-size: clamp(0.9rem, 2.5vw, 1.2em); }
         .controls-buttons { display: flex; justify-content: center; align-items: center; width: 100%; gap: 15px; }
         .control-button-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .control-button-label { font-size: 1.1em; color: #555; text-align: center; line-height: 1.5; }
+        .control-button-label { font-size: 0.7em; color: #555; text-align: center; line-height: 1.1; }
         .controls button { background: #4285F4; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.3s, width 0.3s, height 0.3s, font-size 0.3s; }
         .controls button:hover { background-color: #3367D6; }
         .controls button.nav-btn { background: #757575; width: 40px; height: 40px; font-size: 20px; }
@@ -148,7 +123,12 @@
         #bookNowBtn:hover { background-color: #218838; }
         #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; }
 
-        /* --- АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ --- */
+        /* --- АДАПТИВНОСТЬ --- */
+        .pc-only {
+             /* По умолчанию элементы для ПК видны */
+            display: flex; /* Используем flex для .control-button-wrapper */
+        }
+
         @media (max-width: 768px) {
             .cover-text-box { font-size: 1em; }
             #cover-text-1 { top: 15%; left: 50%; }
@@ -163,24 +143,17 @@
             .modal-content { max-width: 95%; max-height: 90%; }
             .modal-close { top: 10px; right: 20px; font-size: 30px; }
             
-            /* Скрываем кнопку "Описание маршрута" на мобильных */
-            #showDescriptionBtnWrapper {
-                display: none;
-            }
-            /* Скрываем зеленую кнопку "Открыть в окне" на мобильных */
-            .view-popup-btn {
+            /* Скрываем все элементы для ПК на мобильных устройствах */
+            .pc-only {
                 display: none;
             }
         }
-
     </style>
 </head>
 <body>
 
     <div id="cover-view" class="content-view">
-        <video id="cover-video" autoplay loop muted playsinline>
-            <source src="https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%207.%20%D0%AF%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0%20-%20%D0%95%D0%BA%D0%B5%D0%BD%D1%87%D0%B8%D0%BA.%202%20%D0%B4%D0%BD%D1%8F%20%D0%B8%201%20%D0%BD%D0%BE%D1%87%D1%8C..mp4" type="video/mp4">
-        </video>
+        <video id="cover-video" autoplay loop muted playsinline></video>
         <div id="cover-text-1" class="cover-text-box" data-visible="true" data-tooltip="Мармарис, здесь вы скорее всего проживаете.">
             <span class="cover-text-bg">МАРМАРИС</span>
         </div>
@@ -193,10 +166,6 @@
         <div id="cover-text-4" class="cover-text-box" data-visible="true" data-tooltip="Кюмлюбюк, завораживающие виды и спокойный отдых.">
             <span class="cover-text-bg">Стоянка</span>
         </div>
-        <div id="cover-text-5" class="cover-text-box" data-visible="false" data-tooltip="Название нашей комфортабельной яхты.">
-            <span class="cover-text-bg">Яхта «Василиса»</span>
-            <span class="arrow arrow-up"></span><span class="arrow arrow-down"></span><span class="arrow arrow-right"></span><span class="arrow arrow-left"></span>
-        </div>
         <div id="tooltip-box"></div>
     </div>
 
@@ -205,14 +174,14 @@
             <div class="page active" data-page-number="1">
                 <div class="button-container">
                     <button class="view-video-btn">Видео</button>
-                    <button class="view-popup-btn">Открыть в окне</button>
+                    <button class="view-popup-btn pc-only">Открыть в окне</button>
                 </div>
                 <p id="page-text-1"></p>
             </div>
             <div class="page" data-page-number="2">
                 <div class="button-container">
                     <button class="view-video-btn">Видео</button>
-                    <button class="view-popup-btn">Открыть в окне</button>
+                     <button class="view-popup-btn pc-only">Открыть в окне</button>
                 </div>
                 <p id="page-text-2"></p>
             </div>
@@ -233,7 +202,7 @@
             
             <span id="pageIndicator"></span>
             
-            <div class="control-button-wrapper" 
+             <div class="control-button-wrapper pc-only" id="showDescriptionBtnWrapper">
                 <button id="showDescriptionBtn">☰</button>
                 <div class="control-button-label">Описание<br>маршрута</div>
             </div>
@@ -268,6 +237,7 @@
         const CONFIG = {
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route7',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%827.mp3',
+            coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%207.%20%D0%AF%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0%20-%20%D0%95%D0%BA%D0%B5%D0%BD%D1%87%D0%B8%D0%BA.%202%20%D0%B4%D0%BD%D1%8F%20%D0%B8%201%20%D0%BD%D0%BE%D1%87%D1%8C..mp4',
             pages: [
                 {
                     pageNumber: 1,
@@ -283,6 +253,7 @@
         };
         
         // --- Инициализация контента из CONFIG ---
+        document.getElementById('cover-video').src = CONFIG.coverVideoUrl;
         document.getElementById('page-text-1').innerHTML = CONFIG.pages[0].text;
         document.getElementById('page-text-2').innerHTML = CONFIG.pages[1].text;
         
@@ -472,7 +443,7 @@
             window.open(CONFIG.bookingUrl, '_blank', 'width=800,height=700,scrollbars=yes,resizable=yes');
         });
 
-        // --- ЛОГИКА ДЛЯ ОКНА-ПОПАПА (ЗЕЛЕНАЯ КНОПКА - ВОССТАНОВЛЕНО) ---
+        // --- ЛОГИКА ДЛЯ ОКНА-ПОПАПА (ЗЕЛЕНАЯ КНОПКА) ---
         const viewPopupBtns = document.querySelectorAll('.view-popup-btn');
         viewPopupBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -520,6 +491,4 @@
     });
     </script>
     </body>
-
 </html>
-
