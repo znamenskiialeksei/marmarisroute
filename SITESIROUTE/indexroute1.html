@@ -6,17 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Приключения яхты «Василиса»</title>
     <style>
-        /* --- ОСНОВНЫЕ СТИЛИ СТРАНИЦЫ И КОНТЕЙНЕРОВ --- */
         body {
+            --iframe-container-width: 100%;   
+            /* Высота управляется JS */
+            --iframe-internal-padding: 4px; 
+
             margin: 0;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            /* Фоллбэк для старых браузеров */
             height: 100svh;
-            /* Корректная высота для мобильных устройств */
         }
 
         .content-view {
@@ -40,11 +41,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* object-fit управляется через JS для выбора режима */
             z-index: 1;
         }
 
-        /* --- СТИЛИ ТЕКСТА НА ОБЛОЖКЕ --- */
         .cover-text-box {
             position: absolute;
             z-index: 2;
@@ -78,14 +77,12 @@
             white-space: nowrap;
         }
 
-        /* --- СТИЛИ СТРЕЛОК --- */
         .arrow { width: 0; height: 0; border-style: solid; }
         .arrow-right { border-width: 10px 0 10px 15px; border-color: transparent transparent transparent #fff; }
         .arrow-left { border-width: 10px 15px 10px 0; border-color: transparent #fff transparent transparent; }
         .arrow-up { border-width: 0 10px 15px 10px; border-color: transparent transparent #fff transparent; }
         .arrow-down { border-width: 15px 10px 0 10px; border-color: #fff transparent transparent transparent; }
 
-        /* --- СТИЛИ ВСПЛЫВАЮЩЕГО ОКНА (TOOLTIP) --- */
         #tooltip-box {
             position: absolute;
             z-index: 10;
@@ -106,7 +103,6 @@
 
         #tooltip-box.visible { opacity: 1; visibility: visible; }
 
-        /* --- СТИЛИ КНИГИ --- */
         #book-view.content-view { background-color: #e0f7fa; }
         .page { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out; background: white; }
         .page.active { opacity: 1; visibility: visible; }
@@ -133,7 +129,6 @@
         .view-image-btn:hover { background-color: #3367D6; }
         .view-popup-btn:hover { background-color: #218838; }
 
-        /* Стили модального окна */
         .modal {
             display: none;
             position: fixed;
@@ -147,6 +142,7 @@
             align-items: center;
             flex-direction: column;
             gap: 10px;
+            overflow-y: auto; 
         }
         .modal-content {
             display: block;
@@ -176,7 +172,28 @@
         .modal-header { font-weight: bold; }
         .modal-footer { font-size: clamp(0.7rem, 1.8vw, 0.9em); opacity: 0.8; }
 
-        /* --- СТИЛИ ОБЩЕГО МЕНЮ (ВСЕГДА ВИДНО) --- */
+        #iframe-wrapper {
+            position: relative;
+            width: var(--iframe-container-width);
+            max-width: 700px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: var(--iframe-internal-padding);
+            box-sizing: border-box; 
+            transition: height 0.3s ease; 
+        }
+        #bookingFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        #iframe-wrapper .modal-close {
+            top: 5px;
+            right: 15px;
+            color: #555; 
+            font-size: 30px;
+        }
+
         .controls { flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px 15px; background: #f1f1f1; border-top: 1px solid #ddd; }
         .controls-label { color: #555; margin-bottom: 8px; font-weight: bold; text-align: center; font-size: clamp(0.9rem, 2.5vw, 1.2em); }
         .controls-buttons { display: flex; justify-content: center; align-items: center; width: 100%; gap: clamp(10px, 3vw, 25px); }
@@ -210,8 +227,6 @@
         
         #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; min-width: 50px; text-align: center; }
 
-        /* --- ЛОГИКА СКРЫТИЯ КНОПОК ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ --- */
-        /* Эти стили применяются через JS, когда определяется мобильное устройство */
         body.mobile-device .desktop-only {
             display: none !important;
         }
@@ -219,7 +234,6 @@
             display: none !important;
         }
 
-        /* --- АДАПТИВНОСТЬ (Только для общих элементов интерфейса) --- */
         @media (max-width: 768px) {
             .cover-text-box { font-size: 1em; }
             #cover-text-1 { top: 15%; left: 50%; }
@@ -238,8 +252,7 @@
 <body>
 
     <div id="cover-view" class="content-view">
-        <video id="cover-video" autoplay loop muted playsinline>
-            </video>
+        <video id="cover-video" autoplay loop muted playsinline></video>
         <div id="cover-text-1" class="cover-text-box" data-visible="true" data-tooltip="Мармарис, здесь вы скорее всего проживаете.">
             <span class="cover-text-bg">МАРМАРИС</span>
         </div>
@@ -279,7 +292,7 @@
     </div>
 
     <div class="controls">
-        <div class="controls-label">Маршрут 7. Яхтенный тур под парусом Мармарис Яхт Марина - Екенчик. 2 дня и 1 ночь.</div>
+        <div class="controls-label">Маршрут 1. Яхтенный тур под парусом Мармарис Яхт Марина .</div>
         <div class="controls-buttons">
             <div class="button-wrapper">
                 <button id="prevBtn" class="nav-btn">◄</button>
@@ -312,6 +325,13 @@
         <div id="modalFooter" class="modal-footer"></div>
     </div>
 
+    <div id="bookingModal" class="modal">
+        <div id="iframe-wrapper">
+            <span class="modal-close">&times;</span>
+            <iframe id="bookingFrame" src="" title="Форма бронирования"></iframe>
+        </div>
+    </div>
+
     <audio id="narrationAudio" preload="auto"></audio>
 
     <script>
@@ -323,9 +343,6 @@
             const audioUrl = 'https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%827.mp3';
             const bookingUrl = 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route7';
 
-            // --- ЗАДАЧА 1: Настройка режима отображения видео на обложке ---
-            // 'cover' - Нормальный режим (заполнение с обрезкой)
-            // 'fill' - Подогнать по размеру окна (растягивание без сохранения пропорций)
             const coverVideoFitMode = 'fill'; 
 
             const pageData = [
@@ -361,32 +378,26 @@
             let isPlaying = false;
             let isCoverActive = true;
             
-            // --- Инициализация и настройка ---
-            
-            // Функция для определения мобильного устройства
             function isMobileDevice() {
                 const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
                 return isMobile;
             }
 
-            // Применяем класс, если это мобильное устройство
             if (isMobileDevice()) {
                 document.body.classList.add('mobile-device');
             }
 
-            // Заполнение контента страниц из массива pageData
             function populatePageContent() {
                 pages.forEach(page => {
                     const pageNum = parseInt(page.dataset.pageNumber);
                     const data = pageData.find(p => p.page === pageNum);
                     if (data) {
                         page.querySelector('p').innerHTML = data.text;
-                        page.dataset.videoSrc = data.videoSrc; // Сохраняем ссылку на видео в data-атрибут
+                        page.dataset.videoSrc = data.videoSrc;
                     }
                 });
                 const coverVideo = document.getElementById('cover-video');
                 coverVideo.src = pageData[0].videoSrc;
-                // ЗАДАЧА 1: Применение настройки режима видео
                 coverVideo.style.objectFit = coverVideoFitMode; 
             }
 
@@ -394,7 +405,6 @@
             audioPlayer.src = audioUrl;
             updateButtonsAndIndicator();
 
-            // --- Логика книги и навигации ---
             function showPage(pageNumber) {
                 if (pageNumber < 1 || pageNumber > pages.length) return;
                 pages.forEach(page => {
@@ -470,44 +480,51 @@
             nextBtn.addEventListener('click', handleNext);
             prevBtn.addEventListener('click', handlePrev);
             
-            // --- Логика новых кнопок ---
             descriptionBtn.addEventListener('click', () => {
                 const fullText = pageData.map(p => `<h2>Страница ${p.page}</h2><article>${p.text}</article>`).join('<hr>');
                 const popup = window.open('', 'routeDescription', 'width=800,height=600,scrollbars=yes,resizable=yes');
                 popup.document.write(`
                     <html>
-                        <head>
-                            <title>Описание Маршрута</title>
-                            <style>
-                                body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; padding: 20px; }
-                                h2 { color: #333; }
-                                hr { border: 0; border-top: 1px solid #ccc; margin: 20px 0; }
-                                article { color: #555; }
-                            </style>
-                        </head>
+                        <head><title>Описание Маршрута</title><style>body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; padding: 20px; } h2 { color: #333; } hr { border: 0; border-top: 1px solid #ccc; margin: 20px 0; } article { color: #555; }</style></head>
                         <body>${fullText}</body>
                     </html>
                 `);
                 popup.document.close();
             });
 
+            const bookingModal = document.getElementById('bookingModal');
+            const bookingFrame = document.getElementById('bookingFrame');
+            const closeBookingBtn = document.querySelector('#bookingModal .modal-close');
+
             bookingBtn.addEventListener('click', () => {
-                // ЗАДАЧА 2: Адаптивное всплывающее окно для бронирования
-                const screenWidth = window.screen.width;
-                const screenHeight = window.screen.height;
-
-                // Задаем ширину 90% от экрана, но не более 900px для удобства на больших экранах
-                const popupWidth = Math.min(screenWidth * 0.9, 900);
-                // Задаем высоту 90% от экрана, чтобы были отступы
-                const popupHeight = screenHeight * 0.9;
-
-                // Центрируем окно
-                const left = (screenWidth - popupWidth) / 2;
-                const top = (screenHeight - popupHeight) / 2;
-
-                window.open(bookingUrl, 'bookingForm', `width=${popupWidth},height=${popupHeight},top=${top},left=${left},scrollbars=yes,resizable=yes`);
+                const iframeWrapper = document.getElementById('iframe-wrapper');
+                // ИЗМЕНЕНИЕ: Устанавливаем минимальную стартовую высоту
+                iframeWrapper.style.height = '90vh'; 
+                bookingFrame.src = bookingUrl;
+                bookingModal.style.display = 'flex';
+            });
+            
+            function closeBookingModal() {
+                bookingModal.style.display = 'none';
+                bookingFrame.src = '';
+            }
+            
+            closeBookingBtn.addEventListener('click', closeBookingModal);
+            bookingModal.addEventListener('click', (event) => {
+                if (event.target === bookingModal) {
+                    closeBookingModal();
+                }
             });
 
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'formHeight') {
+                    const iframeWrapper = document.getElementById('iframe-wrapper');
+                    const formContentHeight = event.data.height;
+                    const paddingValue = parseInt(getComputedStyle(document.body).getPropertyValue('--iframe-internal-padding'), 10);
+                    const totalHeight = formContentHeight + (paddingValue * 2) + 5;
+                    iframeWrapper.style.height = totalHeight + 'px';
+                }
+            });
 
             audioPlayer.addEventListener('timeupdate', () => {
                 if (!isPlaying || isCoverActive) return;
@@ -525,10 +542,9 @@
                 audioPlayer.currentTime = 1.0;
             });
 
-            // --- Логика модального окна для видео ---
             const modal = document.getElementById('imageModal');
             const modalVideo = document.getElementById('modalVideo');
-            const closeBtn = document.querySelector('.modal-close');
+            const closeBtn = document.querySelector('#imageModal .modal-close');
             const viewVideoBtns = document.querySelectorAll('.view-image-btn');
             const viewPopupBtns = document.querySelectorAll('.view-popup-btn');
             const modalHeader = document.getElementById('modalHeader');
@@ -579,7 +595,6 @@
                 if (event.target === modal) { closeModal(); }
             });
 
-            // --- Логика всплывающего окна (TOOLTIP) ---
             const tooltipBox = document.getElementById('tooltip-box');
             const coverTexts = document.querySelectorAll('.cover-text-box');
 
@@ -612,4 +627,5 @@
         });
     </script>
 </body>
+
 </html>
