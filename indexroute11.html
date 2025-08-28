@@ -7,12 +7,10 @@
     <title>Приключения яхты «Василиса»</title>
     <style>
         body {
-            /* Переменные для внешних отступов (размер контейнера iframe) */
-            --iframe-container-width: 95%;   /* Ширина контейнера iframe */
-            /* --iframe-container-height: 90vh; */ /* Высота управляется JS */
-            
-            /* Переменная для внутренних отступов (от рамки до формы) */
-            --iframe-internal-padding: 15px; /* Отступ внутри белой рамки до формы */
+            /* Переменные для ручной настройки РАЗМЕРА КОНТЕЙНЕРА */
+            --iframe-container-width: 95%;   
+            --iframe-container-height: 90vh; /* Эта переменная снова управляет высотой. 90vh = 90% высоты экрана */
+            --iframe-internal-padding: 15px; 
 
             margin: 0;
             overflow: hidden;
@@ -178,12 +176,12 @@
             position: relative;
             width: var(--iframe-container-width);
             max-width: 700px;
-            /* Высота теперь устанавливается через JS */
+            height: var(--iframe-container-height); /* Используем фиксированную высоту */
             background-color: #ffffff;
             border-radius: 8px;
             padding: var(--iframe-internal-padding);
             box-sizing: border-box; 
-            transition: height 0.3s ease; /* Плавное изменение высоты */
+            overflow: hidden; /* Прячем все, что не помещается */
         }
         #bookingFrame {
             width: 100%;
@@ -295,7 +293,7 @@
     </div>
 
     <div class="controls">
-        <div class="controls-label">Маршрут 7.2 Яхтенный тур под парусом Мармарис Яхт Марина - Екенчик. 2 дня и 1 ночь.</div>
+        <div class="controls-label">Маршрут 7. Яхтенный тур под парусом Мармарис Яхт Марина - Екенчик. 2 дня и 1 ночь.</div>
         <div class="controls-buttons">
             <div class="button-wrapper">
                 <button id="prevBtn" class="nav-btn">◄</button>
@@ -500,8 +498,6 @@
             const closeBookingBtn = document.querySelector('#bookingModal .modal-close');
 
             bookingBtn.addEventListener('click', () => {
-                const iframeWrapper = document.getElementById('iframe-wrapper');
-                iframeWrapper.style.height = '300px'; 
                 bookingFrame.src = bookingUrl;
                 bookingModal.style.display = 'flex';
             });
@@ -515,16 +511,6 @@
             bookingModal.addEventListener('click', (event) => {
                 if (event.target === bookingModal) {
                     closeBookingModal();
-                }
-            });
-
-            window.addEventListener('message', function(event) {
-                if (event.data && event.data.type === 'formHeight') {
-                    const iframeWrapper = document.getElementById('iframe-wrapper');
-                    const formContentHeight = event.data.height;
-                    const paddingValue = parseInt(getComputedStyle(document.body).getPropertyValue('--iframe-internal-padding'), 10);
-                    const totalHeight = formContentHeight + (paddingValue * 2) + 5;
-                    iframeWrapper.style.height = totalHeight + 'px';
                 }
             });
 
@@ -629,6 +615,4 @@
         });
     </script>
 </body>
-
 </html>
-
