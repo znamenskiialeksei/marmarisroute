@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр видео</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        video {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <video id="videoPlayer" controls autoplay playsinline></video>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const params = new URLSearchParams(window.location.search);
+            const videoSrc = params.get('videoSrc');
+            const loop = params.get('loop') === 'true';
+
+            if (videoSrc) {
+                videoPlayer.src = decodeURIComponent(videoSrc);
+                videoPlayer.loop = loop;
+                videoPlayer.play();
+            } else {
+                document.body.innerHTML = '<p style="color: white;">Видеофайл не найден.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
