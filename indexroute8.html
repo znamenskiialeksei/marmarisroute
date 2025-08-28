@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приключения яхты «Василиса»</title>
+    <style>
+        /* --- ОСНОВНЫЕ СТИЛИ СТРАНИЦЫ И КОНТЕЙНЕРОВ --- */
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            /* Фоллбэк для старых браузеров */
+            height: 100svh;
+            /* Корректная высота для мобильных устройств */
+        }
+
+        .content-view {
+            flex-grow: 1;
+            position: relative;
+            display: none;
+        }
+
+        #cover-view.content-view {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        #cover-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Изменено с fill на cover для лучшего вида */
+            z-index: 1;
+        }
+
+        /* --- СТИЛИ ТЕКСТА НА ОБЛОЖКЕ --- */
+        .cover-text-box {
+            position: absolute;
+            z-index: 2;
+            text-shadow: 2px 2px 5px rgba(8, 0, 0, 0.8);
+            font-size: 1.1em;
+            max-width: 90%;
+            text-align: center;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: opacity 0.5s, top 0.5s, left 0.5s;
+        }
+
+        .cover-text-box[data-visible="false"] {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #cover-text-1 { top: 15%; left: 20%; }
+        #cover-text-2 { top: 42%; left: 35%; }
+        #cover-text-3 { top: 25%; left: 85%; }
+        #cover-text-4 { top: 80%; left: 15%; }
+        #cover-text-5 { top: 45%; left: 50%; }
+
+        .cover-text-bg {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            color: rgb(246, 238, 238);
+            white-space: nowrap;
+        }
+
+        /* --- СТИЛИ СТРЕЛОК --- */
+        .arrow { width: 0; height: 0; border-style: solid; }
+        .arrow-right { border-width: 10px 0 10px 15px; border-color: transparent transparent transparent #fff; }
+        .arrow-left { border-width: 10px 15px 10px 0; border-color: transparent #fff transparent transparent; }
+        .arrow-up { border-width: 0 10px 15px 10px; border-color: transparent transparent #fff transparent; }
+        .arrow-down { border-width: 15px 10px 0 10px; border-color: #fff transparent transparent transparent; }
+
+        /* --- СТИЛИ ВСПЛЫВАЮЩЕГО ОКНА (TOOLTIP) --- */
+        #tooltip-box {
+            position: absolute;
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            max-width: 250px;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            pointer-events: none;
+            left: 0;
+            top: 0;
+        }
+
+        #tooltip-box.visible { opacity: 1; visibility: visible; }
+
+        /* --- СТИЛИ КНИГИ --- */
+        #book-view.content-view { background-color: #e0f7fa; }
+        .page { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out; background: white; }
+        .page.active { opacity: 1; visibility: visible; }
+        .page p { margin-top: 15px; text-align: left; font-size: 1.1em; line-height: 1.6; color: #333; overflow-y: auto; width: 100%; padding-right: 10px; flex-grow: 1; min-height: 0; }
+        
+        .page-buttons-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+
+        .view-image-btn, .view-popup-btn {
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .view-image-btn { background-color: #4285F4; }
+        .view-popup-btn { background-color: #28a745; }
+        .view-image-btn:hover { background-color: #3367D6; }
+        .view-popup-btn:hover { background-color: #218838; }
+
+        /* Стили модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .modal-content {
+            display: block;
+            max-width: 90%;
+            max-height: 80%;
+            width: auto;
+            height: auto;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        .modal-header, .modal-footer {
+            color: white;
+            text-align: center;
+            padding: 5px 15px;
+            max-width: 90%;
+            box-sizing: border-box;
+            font-size: clamp(0.8rem, 2vw, 1.1em);
+        }
+        .modal-header { font-weight: bold; }
+        .modal-footer { font-size: clamp(0.7rem, 1.8vw, 0.9em); opacity: 0.8; }
+
+        /* --- СТИЛИ ОБЩЕГО МЕНЮ (ВСЕГДА ВИДНО) --- */
+        .controls { flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px 15px; background: #f1f1f1; border-top: 1px solid #ddd; }
+        .controls-label { color: #555; margin-bottom: 8px; font-weight: bold; text-align: center; font-size: clamp(0.9rem, 2.5vw, 1.2em); }
+        .controls-buttons { display: flex; justify-content: center; align-items: center; width: 100%; gap: clamp(10px, 3vw, 25px); }
+        
+        .button-wrapper { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .button-label { font-size: clamp(0.6rem, 1.8vw, 0.8rem); color: #555; text-align: center; line-height: 1.1; }
+
+        .controls button {
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .controls button:hover { transform: scale(1.1); }
+        
+        #playPauseBtn { background: #4285F4; width: 50px; height: 50px; font-size: 24px; }
+        #playPauseBtn:hover { background-color: #3367D6; }
+        
+        .nav-btn { background: #757575; width: 40px; height: 40px; font-size: 20px; }
+        .nav-btn:hover { background-color: #555; }
+
+        #descriptionBtn { background: #009688; width: 40px; height: 40px; font-size: 20px; }
+        #descriptionBtn:hover { background-color: #00796b; }
+        
+        #bookingBtn { background: #4CAF50; width: 40px; height: 40px; font-size: 20px; }
+        #bookingBtn:hover { background-color: #45a049; }
+        
+        #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; min-width: 50px; text-align: center; }
+
+        /* --- ЛОГИКА СКРЫТИЯ КНОПОК ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ --- */
+        /* Эти стили применяются через JS, когда определяется мобильное устройство */
+        body.mobile-device .desktop-only {
+            display: none !important;
+        }
+        body.mobile-device .view-popup-btn {
+            display: none !important;
+        }
+
+        /* --- АДАПТИВНОСТЬ (Только для общих элементов интерфейса) --- */
+        @media (max-width: 768px) {
+            .cover-text-box { font-size: 1em; }
+            #cover-text-1 { top: 15%; left: 50%; }
+            #cover-text-2 { top: 35%; left: 50%; }
+            #cover-text-3 { top: 55%; left: 50%; }
+            #cover-text-4 { top: 75%; left: 50%; }
+
+            .page p { font-size: 1em; line-height: 1.5; }
+            
+            .modal-content { max-width: 95%; max-height: 90%; }
+            .modal-close { top: 10px; right: 20px; font-size: 30px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="cover-view" class="content-view">
+        <video id="cover-video" autoplay loop muted playsinline>
+            </video>
+        <div id="cover-text-1" class="cover-text-box" data-visible="true" data-tooltip="Мармарис, здесь вы скорее всего проживаете.">
+            <span class="cover-text-bg">МАРМАРИС</span>
+        </div>
+        <div id="cover-text-2" class="cover-text-box" data-visible="true" data-tooltip="Мармарис Яхт Марина, откуда начинается наше путешествие.">
+            <span class="cover-text-bg">START</span>
+        </div>
+        <div id="cover-text-3" class="cover-text-box" data-visible="true" data-tooltip="Екенчик старинная гавань и финальная точка маршрута.">
+            <span class="cover-text-bg">FINISH </span>
+        </div>
+        <div id="cover-text-4" class="cover-text-box" data-visible="true" data-tooltip="Кюмлюбюк, завораживающие виды и спокойный отдых.">
+            <span class="cover-text-bg">Стоянка</span>
+        </div>
+        <div id="cover-text-5" class="cover-text-box" data-visible="false" data-tooltip="Название нашей комфортабельной яхты.">
+            <span class="cover-text-bg">Яхта «Василиса»</span>
+            <span class="arrow arrow-up"></span><span class="arrow arrow-down"></span><span class="arrow arrow-right"></span><span class="arrow arrow-left"></span>
+        </div>
+        <div id="tooltip-box"></div>
+    </div>
+
+    <div id="book-view" class="content-view">
+        <div class="page-viewer">
+            <div class="page active" data-page-number="1">
+                <div class="page-buttons-container">
+                    <button class="view-image-btn">Показать видео</button>
+                    <button class="view-popup-btn">Открыть в окне</button>
+                </div>
+                <p></p>
+            </div>
+            <div class="page" data-page-number="2">
+                <div class="page-buttons-container">
+                    <button class="view-image-btn">Показать видео</button>
+                    <button class="view-popup-btn">Открыть в окне</button>
+                </div>
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="controls-label">Маршрут 7. Яхтенный тур под парусом Мармарис Яхт Марина - Екенчик. 2 дня и 1 ночь.</div>
+        <div class="controls-buttons">
+            <div class="button-wrapper">
+                <button id="prevBtn" class="nav-btn">◄</button>
+                <span class="button-label">назад</span>
+            </div>
+            <div class="button-wrapper">
+                <button id="playPauseBtn">▶</button>
+                <span class="button-label">слушать</span>
+            </div>
+            <span id="pageIndicator"></span>
+            <div class="button-wrapper">
+                <button id="nextBtn" class="nav-btn">►</button>
+                <span class="button-label">вперёд</span>
+            </div>
+            <div class="button-wrapper desktop-only">
+                <button id="descriptionBtn" title="Описание маршрута">☰</button>
+                <span class="button-label">описание<br>маршрута</span>
+            </div>
+            <div class="button-wrapper">
+                <button id="bookingBtn" title="Бронировать">🛒</button>
+                <span class="button-label">бронировать</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <span class="modal-close">&times;</span>
+        <div id="modalHeader" class="modal-header"></div>
+        <video class="modal-content" id="modalVideo" controls playsinline></video>
+        <div id="modalFooter" class="modal-footer"></div>
+    </div>
+
+    <audio id="narrationAudio" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // =========================================================================
+            // === КОНФИГУРАЦИЯ МАРШРУТА (Редактировать данные здесь) ===================
+            // =========================================================================
+
+            const audioUrl = 'https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%827.mp3';
+            const bookingUrl = 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route7';
+
+            const pageData = [
+                {
+                    page: 1,
+                    endTime: 77.00,
+                    videoSrc: "https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%207.%20%D0%AF%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0%20-%20%D0%95%D0%BA%D0%B5%D0%BD%D1%87%D0%B8%D0%BA.%202%20%D0%B4%D0%BD%D1%8F%20%D0%B8%201%20%D0%BD%D0%BE%D1%87%D1%8C..mp4",
+                    text: `<strong>Помощник капитана:</strong> Путешествие в Екинчик: морской горизонт и скрытые жемчужины. Двухдневный яхтенный тур для истинных ценителей моря, сочетающий в себе живописные прибрежные пейзажи и азарт настоящего парусного перехода. Маршрут ведет в Екинчик — уединенную бухту, служащую воротами к природным чудесам дельты Дальян. Приглашаем вас на борт комфортабельной парусной яхты для путешествия к более отдаленным и нетронутым берегам. Этот тур подарит вам ощущение настоящего морского похода, длительные переходы под парусом и отдых в одной из самых красивых и спокойных бухт региона. Идеально подходит для небольшой компании от 1 до 6 человек. Стоимость тура: 2040 долларов США. Продолжительность: 2 дня / 1 ночь. Маршрут: Мармарис Яхт Марина – Кумлубюк – Екинчик – Мармарис Яхт Марина. Аудитория: от 1 до 6 гостей, включая детей от 6 лет. Мы стремимся подарить вам истинное удовольствие от яхтинга, поэтому при благоприятных погодных условиях мы обязательно совершим переход под парусами. А для самых ярких фотографий белоснежный парус будет поднят в любом случае.`
+                },
+                {
+                    page: 2,
+                    endTime: 271.00,
+                    videoSrc: "https://raw.githubusercontent.com/znamenskiialeksei/SaitROUTE-ozvuchka/main/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%207.%20%D0%AF%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0%20-%20%D0%95%D0%BA%D0%B5%D0%BD%D1%87%D0%B8%D0%BA.%202%20%D0%B4%D0%BD%D1%8F%20%D0%B8%201%20%D0%BD%D0%BE%D1%87%D1%8C..mp4",
+                    text: `<strong>Помощник капитана:</strong> Программа путешествия. День 1: Большой переход и огни Екинчика. Наше путешествие начнется в 9:30 из современной гавани Мармарис Яхт Марина. Сразу после выхода в море вас ждет увлекательный панорамный круиз: мы пройдем мимо уединенного отеля Cook's Club Adakoy, живописных Козьего и Вороньего островов и знаменитого пляжа Турунч. 11:00 – Мы бросим якорь в респектабельной бухте Кумлубюк. Здесь у вас будет четыре часа для абсолютного релакса: купайтесь в кристально чистой воде, отдыхайте на палубе или воспользуйтесь нашими водными развлечениями. На обед вам предложат выбор из двух превосходных ресторанов на берегу: Kumlubük Pebble Beach или Hollandalı Ahmet. 15:00 – После полуденного отдыха начинается главный морской переход этого дня. Почти четыре часа мы будем идти вдоль побережья, наслаждаясь ощущением открытого моря. С одного борта — бескрайняя синева, где на горизонте виднеется греческий остров Родос, с другого — величественные скалистые берега. 18:45 – Мы прибываем в защищенную бухту Екинчик и швартуемся к пирсу элегантного ресторана My Marina Yacht Club. 19:00 – Вечер завершится изысканным ужином в ресторане, известном своей прекрасной кухней и великолепной атмосферой яхтенного клуба. Ночь мы проведем у пирса в спокойных водах Екинчика. День 2: Безмятежность Екинчика и возвращение. Второй день посвящен неспешному отдыху в умиротворяющей атмосфере Екинчика перед долгим и красивым возвращением домой. Утро: День начнется с завтрака в ресторане My Marina Yacht Club. После него у вас будет время для пляжного отдыха, купания и водных развлечений в этой просторной и живописной бухте. 12:00 – Обед будет подан в том же гостеприимном ресторане, чтобы вы могли еще раз насладиться его кухней и видами на марину. 13:15 – Мы отходим от пирса и начинаем наш обратный путь в Мармарис. Это будет грандиозный финальный переход длительностью 4,5 часа — прекрасная возможность расслабиться на палубе, загорать, читать книгу и наблюдать, как мимо проплывают километры изрезанной береговой линии. 18:15 – Прибытие в Мармарис Яхт Марина, завершение нашего морского путешествия. Важные детали и сервисы. В стоимость тура включено: Аренда парусной яхты с капитаном. Чай, кофе, питьевая вода. Сладости к чаю: конфеты, печенье, лукум. Пользование надувным каяком, сап-бордом, надувной "ватрушкой" и масками для плавания. Красивая сервировка ваших блюд на борту (по предварительному согласованию). Обратите внимание: Питание и напитки в ресторанах на берегу оплачиваются гостями по факту. Подарите себе и своим близким незабываемое путешествие, наполненное солнцем, морем и яркими впечатлениями!`
+                }
+            ];
+            
+            // =========================================================================
+            // === ОСНОВНАЯ ЛОГИКА (Не требует редактирования) ==========================
+            // =========================================================================
+            
+            const coverView = document.getElementById('cover-view');
+            const bookView = document.getElementById('book-view');
+            const audioPlayer = document.getElementById('narrationAudio');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const descriptionBtn = document.getElementById('descriptionBtn');
+            const bookingBtn = document.getElementById('bookingBtn');
+            const pageIndicator = document.getElementById('pageIndicator');
+            const pages = document.querySelectorAll('.page');
+            let currentPage = 1;
+            let isPlaying = false;
+            let isCoverActive = true;
+            
+            // --- Инициализация и настройка ---
+            
+            // Функция для определения мобильного устройства
+            function isMobileDevice() {
+                const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+                return isMobile;
+            }
+
+            // Применяем класс, если это мобильное устройство
+            if (isMobileDevice()) {
+                document.body.classList.add('mobile-device');
+            }
+
+            // Заполнение контента страниц из массива pageData
+            function populatePageContent() {
+                pages.forEach(page => {
+                    const pageNum = parseInt(page.dataset.pageNumber);
+                    const data = pageData.find(p => p.page === pageNum);
+                    if (data) {
+                        page.querySelector('p').innerHTML = data.text;
+                        page.dataset.videoSrc = data.videoSrc; // Сохраняем ссылку на видео в data-атрибут
+                    }
+                });
+                document.getElementById('cover-video').src = pageData[0].videoSrc;
+            }
+
+            populatePageContent();
+            audioPlayer.src = audioUrl;
+            updateButtonsAndIndicator();
+
+            // --- Логика книги и навигации ---
+            function showPage(pageNumber) {
+                if (pageNumber < 1 || pageNumber > pages.length) return;
+                pages.forEach(page => {
+                    page.classList.toggle('active', parseInt(page.dataset.pageNumber) === pageNumber);
+                });
+                currentPage = pageNumber;
+                updateButtonsAndIndicator();
+            }
+
+            function updateButtonsAndIndicator() {
+                prevBtn.parentElement.style.display = isCoverActive ? 'none' : 'flex';
+                pageIndicator.textContent = isCoverActive ? `0 / ${pages.length}` : `${currentPage} / ${pages.length}`;
+            }
+
+            function handlePlayPause() {
+                if (isCoverActive) {
+                    coverView.style.display = 'none';
+                    bookView.style.display = 'flex';
+                    isCoverActive = false;
+                    audioPlayer.currentTime = 1.0;
+                    audioPlayer.play();
+                    isPlaying = true;
+                    playPauseBtn.textContent = '❚❚';
+                    showPage(1);
+                } else {
+                    if (isPlaying) {
+                        audioPlayer.pause();
+                    } else {
+                        audioPlayer.play();
+                    }
+                    isPlaying = !isPlaying;
+                    playPauseBtn.textContent = isPlaying ? '❚❚' : '▶';
+                }
+            }
+
+            function handleNext() {
+                if (isCoverActive) {
+                    coverView.style.display = 'none';
+                    bookView.style.display = 'flex';
+                    isCoverActive = false;
+                    showPage(1);
+                } else if (currentPage < pages.length) {
+                    const nextPage = currentPage + 1;
+                    showPage(nextPage);
+                    audioPlayer.currentTime = getPageStartTime(nextPage);
+                }
+            }
+
+            function handlePrev() {
+                if (isCoverActive) return;
+                if (currentPage > 1) {
+                    const prevPage = currentPage - 1;
+                    showPage(prevPage);
+                    audioPlayer.currentTime = getPageStartTime(prevPage);
+                } else {
+                    bookView.style.display = 'none';
+                    coverView.style.display = 'flex';
+                    isCoverActive = true;
+                    audioPlayer.pause();
+                    isPlaying = false;
+                    playPauseBtn.textContent = '▶';
+                    updateButtonsAndIndicator();
+                }
+            }
+
+            function getPageStartTime(pageNumber) {
+                if (pageNumber <= 1) return 1.0;
+                const prevPage = pageData.find(p => p.page === pageNumber - 1);
+                return prevPage ? prevPage.endTime : 1.0;
+            }
+
+            playPauseBtn.addEventListener('click', handlePlayPause);
+            nextBtn.addEventListener('click', handleNext);
+            prevBtn.addEventListener('click', handlePrev);
+            
+            // --- Логика новых кнопок ---
+            descriptionBtn.addEventListener('click', () => {
+                const fullText = pageData.map(p => `<h2>Страница ${p.page}</h2><article>${p.text}</article>`).join('<hr>');
+                const popup = window.open('', 'routeDescription', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                popup.document.write(`
+                    <html>
+                        <head>
+                            <title>Описание Маршрута</title>
+                            <style>
+                                body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; padding: 20px; }
+                                h2 { color: #333; }
+                                hr { border: 0; border-top: 1px solid #ccc; margin: 20px 0; }
+                                article { color: #555; }
+                            </style>
+                        </head>
+                        <body>${fullText}</body>
+                    </html>
+                `);
+                popup.document.close();
+            });
+
+            bookingBtn.addEventListener('click', () => {
+                window.open(bookingUrl, 'bookingForm', 'width=800,height=700,scrollbars=yes,resizable=yes');
+            });
+
+
+            audioPlayer.addEventListener('timeupdate', () => {
+                if (!isPlaying || isCoverActive) return;
+                const currentTime = audioPlayer.currentTime;
+                const targetPageData = pageData.find(p => currentTime >= getPageStartTime(p.page) && currentTime < p.endTime) || pageData[pageData.length - 1];
+                if (targetPageData.page !== currentPage) {
+                    showPage(targetPageData.page);
+                }
+            });
+
+            audioPlayer.addEventListener('ended', () => {
+                isPlaying = false;
+                playPauseBtn.textContent = '▶';
+                showPage(1);
+                audioPlayer.currentTime = 1.0;
+            });
+
+            // --- Логика модального окна для видео ---
+            const modal = document.getElementById('imageModal');
+            const modalVideo = document.getElementById('modalVideo');
+            const closeBtn = document.querySelector('.modal-close');
+            const viewVideoBtns = document.querySelectorAll('.view-image-btn');
+            const viewPopupBtns = document.querySelectorAll('.view-popup-btn');
+            const modalHeader = document.getElementById('modalHeader');
+            const modalFooter = document.getElementById('modalFooter');
+            const routeTitle = "Маршрут 7. Яхтенный тур под парусом Мармарис Яхт Марина - Екенчик. 2 дня и 1 ночь.";
+            const downloadInstruction = "Для скачивания видео: нажмите правой кнопкой мыши (или удерживайте на мобильных) на видео и выберите «Сохранить видео как...»";
+
+            viewVideoBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.closest('.page');
+                    const videoSrc = page.dataset.videoSrc;
+                    const pageNumber = parseInt(page.dataset.pageNumber);
+                    if (videoSrc) {
+                        modalVideo.loop = (pageNumber === 1);
+                        modal.style.display = 'flex';
+                        modalVideo.src = videoSrc;
+                        modalVideo.setAttribute('title', routeTitle);
+                        modalHeader.textContent = routeTitle;
+                        modalFooter.textContent = downloadInstruction;
+                        modalVideo.play();
+                    }
+                });
+            });
+            
+            viewPopupBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = btn.closest('.page');
+                    const videoSrc = page.dataset.videoSrc;
+                    const pageNumber = parseInt(page.dataset.pageNumber);
+                    const shouldLoop = (pageNumber === 1);
+                     if (videoSrc) {
+                        const viewerUrl = `viewer.html?videoSrc=${encodeURIComponent(videoSrc)}&loop=${shouldLoop}`;
+                        window.open(viewerUrl, '_blank', 'width=1024,height=768,resizable=yes,scrollbars=yes');
+                    }
+                });
+            });
+
+            function closeModal() {
+                modal.style.display = 'none';
+                modalVideo.pause();
+                modalVideo.src = '';
+                modalHeader.textContent = '';
+                modalFooter.textContent = '';
+            }
+
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) { closeModal(); }
+            });
+
+            // --- Логика всплывающего окна (TOOLTIP) ---
+            const tooltipBox = document.getElementById('tooltip-box');
+            const coverTexts = document.querySelectorAll('.cover-text-box');
+
+            coverTexts.forEach(textElement => {
+                const tooltipText = textElement.getAttribute('data-tooltip');
+                if (tooltipText) {
+                    textElement.addEventListener('mouseenter', (e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        tooltipBox.textContent = tooltipText;
+                        tooltipBox.classList.add('visible');
+                        requestAnimationFrame(() => {
+                            const tooltipWidth = tooltipBox.offsetWidth;
+                            const tooltipHeight = tooltipBox.offsetHeight;
+                            let top = rect.bottom + 10;
+                            let left = rect.left + rect.width / 2 - tooltipWidth / 2;
+
+                            if (left < 0) left = 5;
+                            if (left + tooltipWidth > window.innerWidth) left = window.innerWidth - tooltipWidth - 5;
+                            if (top + tooltipHeight > window.innerHeight) top = rect.top - tooltipHeight - 10;
+
+                            tooltipBox.style.top = `${top}px`;
+                            tooltipBox.style.left = `${left}px`;
+                        });
+                    });
+                    textElement.addEventListener('mouseleave', () => {
+                        tooltipBox.classList.remove('visible');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
