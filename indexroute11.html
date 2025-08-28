@@ -7,10 +7,9 @@
     <title>Приключения яхты «Василиса»</title>
     <style>
         body {
-            /* Переменные для ручной настройки РАЗМЕРА КОНТЕЙНЕРА */
-            --iframe-container-width: 100%;   
-            --iframe-container-height: 100vh; /* Эта переменная снова управляет высотой. 90vh = 90% высоты экрана */
-            --iframe-internal-padding: 2px; 
+            --iframe-container-width: 95%;   
+            /* Высота управляется JS */
+            --iframe-internal-padding: 15px; 
 
             margin: 0;
             overflow: hidden;
@@ -143,6 +142,7 @@
             align-items: center;
             flex-direction: column;
             gap: 10px;
+            overflow-y: auto; 
         }
         .modal-content {
             display: block;
@@ -176,12 +176,11 @@
             position: relative;
             width: var(--iframe-container-width);
             max-width: 700px;
-            height: var(--iframe-container-height); /* Используем фиксированную высоту */
             background-color: #ffffff;
             border-radius: 8px;
             padding: var(--iframe-internal-padding);
             box-sizing: border-box; 
-            overflow: hidden; /* Прячем все, что не помещается */
+            transition: height 0.3s ease; 
         }
         #bookingFrame {
             width: 100%;
@@ -498,6 +497,9 @@
             const closeBookingBtn = document.querySelector('#bookingModal .modal-close');
 
             bookingBtn.addEventListener('click', () => {
+                const iframeWrapper = document.getElementById('iframe-wrapper');
+                // ИЗМЕНЕНИЕ: Устанавливаем минимальную стартовую высоту
+                iframeWrapper.style.height = '90vh'; 
                 bookingFrame.src = bookingUrl;
                 bookingModal.style.display = 'flex';
             });
@@ -511,6 +513,16 @@
             bookingModal.addEventListener('click', (event) => {
                 if (event.target === bookingModal) {
                     closeBookingModal();
+                }
+            });
+
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'formHeight') {
+                    const iframeWrapper = document.getElementById('iframe-wrapper');
+                    const formContentHeight = event.data.height;
+                    const paddingValue = parseInt(getComputedStyle(document.body).getPropertyValue('--iframe-internal-padding'), 10);
+                    const totalHeight = formContentHeight + (paddingValue * 2) + 5;
+                    iframeWrapper.style.height = totalHeight + 'px';
                 }
             });
 
@@ -615,5 +627,4 @@
         });
     </script>
 </body>
-
 </html>
