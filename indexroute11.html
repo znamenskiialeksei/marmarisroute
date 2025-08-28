@@ -13,7 +13,7 @@
             --iframe-container-height: 90vh; /* Высота контейнера iframe */
             
             /* Переменная для внутренних отступов (от рамки до формы) */
-            --iframe-internal-padding: 15px; /* Отступ внутри белой рамки до формы */
+            --iframe-internal-padding: 40px; /* Отступ внутри белой рамки до формы */
 
             margin: 0;
             overflow: hidden;
@@ -183,12 +183,12 @@
             height: var(--iframe-container-height);
             background-color: #ffffff;
             border-radius: 8px;
-            padding: 40px(--iframe-internal-padding);
+            padding: var(--iframe-internal-padding);
             box-sizing: border-box; /* Важно, чтобы padding учитывался внутри размеров */
         }
         #bookingFrame {
             width: 100%;
-            height: 90%;
+            height: 100%;
             border: none;
         }
         /* Специфичный стиль для кнопки закрытия внутри белой обёртки */
@@ -625,3 +625,4 @@
 </body>
 
 </html>
+
