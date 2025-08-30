@@ -269,6 +269,26 @@
                 align-items: center;
                 justify-content: center;
             }
+            .carousel-iframe-wrapper {
+                flex-grow: 1; /* Обертка занимает всё доступное место в карусели */
+                width: 100%;
+                height: 100%;
+                overflow: hidden; /* Самое главное: обрезает всё, что выходит за рамки */
+                position: relative;
+                border-radius: 8px;
+                background-color: #000; /* Черный фон на случай, если фото грузится долго */
+            }
+            
+            #carouselIframe {
+                /* Делаем iframe намного больше контейнера и центрируем его */
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 150%;  /* Увеличиваем ширину, чтобы скрыть поля */
+                height: 150%; /* Увеличиваем высоту */
+                transform: translate(-50%, -50%);
+                border: none;
+            }
         }
     </style>
 </head>
@@ -312,11 +332,13 @@
         <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen scrolling="no"></iframe>
         <audio class="modal-content" id="modalAudio" controls></audio>
         
-        <div class="modal-content" id="modalCarousel">
-            <button class="carousel-nav prev">&lt;</button>
-            <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"></iframe>
-            <button class="carousel-nav next">&gt;</button>
+    <div class="modal-content" id="modalCarousel">
+        <button class="carousel-nav prev">&lt;</button>
+        <div class="carousel-iframe-wrapper">
+        <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"scrolling="no"></iframe>
         </div>
+        <button class="carousel-nav next">&gt;</button>
+    </div>
         
         <div class="modal-footer"></div>
     </div>
@@ -927,6 +949,7 @@
     </script>
 </body>
 </html>
+
 
 
 
