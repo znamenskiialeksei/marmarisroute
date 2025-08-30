@@ -147,6 +147,7 @@
         .page-btn.audio-btn { background-color: #f4b400; }
         .page-btn.photo-btn { background-color: #0F9D58; }
         .page-btn.text-btn { background-color: #673ab7; }
+        .page-btn.carousel-btn { background-color: #9c27b0; } /* Добавлен стиль для кнопки карусели */
         .page-btn:hover { filter: brightness(90%); }
         .page-btn.admin-error-btn { background-color: #db4437; cursor: not-allowed; border: 2px dashed white; font-weight: bold; }
         .link-btn {
@@ -196,6 +197,36 @@
         .nav-btn { background: #757575; width: 40px; height: 40px; font-size: 20px; }
         #bookingBtn { background: #4CAF50; width: 40px; height: 40px; font-size: 20px; }
         #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; min-width: 50px; text-align: center; }
+
+        /* CSS: Стили для карусели */
+        #modalCarousel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 95%;
+            max-width: 1000px; /* Можно настроить максимальную ширину */
+            height: 90%;
+        }
+        #carouselImage {
+            max-width: 80%;
+            max-height: 100%;
+            object-fit: contain; /* Чтобы фото не обрезалось */
+            border-radius: 8px;
+        }
+        .carousel-nav {
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: white;
+            font-size: 3em;
+            cursor: pointer;
+            padding: 0 20px;
+            border-radius: 8px;
+            user-select: none; /* Чтобы текст кнопки не выделялся */
+            height: 80%;
+        }
+        .carousel-nav:hover {
+            background: rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
@@ -227,15 +258,25 @@
             </div>
         </div>
     </div>
+    
     <div id="mediaModal" class="modal">
         <span class="modal-close">&times;</span>
         <div class="modal-header"></div>
+
         <div class="modal-content" id="modalText"></div>
         <img class="modal-content" id="modalPhoto" alt="Изображение">
         <video class="modal-content" id="modalVideo" controls playsinline></video>
         <audio class="modal-content" id="modalAudio" controls></audio>
+
+        <div class="modal-content" id="modalCarousel">
+            <button class="carousel-nav prev">&lt;</button>
+            <img src="" alt="Фото из карусели" id="carouselImage">
+            <button class="carousel-nav next">&gt;</button>
+        </div>
+        
         <div class="modal-footer"></div>
     </div>
+
     <div id="bookingModal" class="modal">
         <div id="iframe-wrapper">
             <span class="modal-close">&times;</span>
@@ -713,30 +754,78 @@
         const modalVideo = document.getElementById('modalVideo');
         const modalAudio = document.getElementById('modalAudio');
         const modalText = document.getElementById('modalText');
+        const modalCarousel = document.getElementById('modalCarousel');
+        const carouselImage = document.getElementById('carouselImage');
+        const carouselPrevBtn = modalCarousel.querySelector('.prev');
+        const carouselNextBtn = modalCarousel.querySelector('.next');
+        let currentCarouselImages = [];
+        let currentCarouselIndex = 0;
         function openMediaModal(media) {
-            mediaModal.querySelector('.modal-header').textContent = media.headerText || '';
-            mediaModal.querySelector('.modal-footer').textContent = media.footerText || '';
-            [modalPhoto, modalVideo, modalAudio, modalText].forEach(el => {
+            // Сбрасываем все элементы
+            [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel].forEach(el => {
                 el.style.display = 'none';
-                if(el.tagName !== 'IMG' && el.tagName !== 'DIV') { el.src = ''; el.pause ? el.pause() : null; } else { el.src = '';}
+                if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } 
+                else if (el.tagName === 'IMG') { el.src = ''; }
             });
-            let contentElement;
-            if (media.type === 'photo') contentElement = modalPhoto;
-            if (media.type === 'video') contentElement = modalVideo;
-            if (media.type === 'audio') contentElement = modalAudio;
-            if (media.type === 'text') contentElement = modalText;
-            if (contentElement) {
-                if (media.type === 'text') {
-                    contentElement.innerHTML = '<em>Загрузка...</em>';
-                    fetch(media.url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>');
-                } else {
-                    contentElement.src = media.url;
+        
+            mediaModal.querySelector('.modal-header').textContent = media.headerText || '';
+            mediaModal.querySelector('.modal-footer').textContent = ''; // Сначала очищаем футер
+        
+            // --- ЛОГИКА ДЛЯ КАРУСЕЛИ ---
+            if (media.type === 'carousel' && media.images && media.images.length > 0) {
+                currentCarouselImages = media.images;
+                currentCarouselIndex = 0;
+        
+                function showCarouselImage(index) {
+                    const imgData = currentCarouselImages[index];
+                    carouselImage.src = imgData.url;
+                    mediaModal.querySelector('.modal-footer').textContent = imgData.caption || '';
+        
+                    // Показываем/скрываем кнопки на первом/последнем слайде
+                    carouselPrevBtn.style.visibility = (index === 0) ? 'hidden' : 'visible';
+                    carouselNextBtn.style.visibility = (index === currentCarouselImages.length - 1) ? 'hidden' : 'visible';
                 }
-                contentElement.style.display = 'block';
-                if (media.type === 'video' || media.type === 'audio') {
-                    contentElement.play();
+        
+                carouselPrevBtn.onclick = () => {
+                    if (currentCarouselIndex > 0) {
+                        currentCarouselIndex--;
+                        showCarouselImage(currentCarouselIndex);
+                    }
+                };
+        
+                carouselNextBtn.onclick = () => {
+                    if (currentCarouselIndex < currentCarouselImages.length - 1) {
+                        currentCarouselIndex++;
+                        showCarouselImage(currentCarouselIndex);
+                    }
+                };
+        
+                showCarouselImage(0); // Показываем первую картинку
+                modalCarousel.style.display = 'flex'; // Показываем блок карусели
+        
+            // --- СТАРАЯ ЛОГИКА ДЛЯ ДРУГИХ МЕДИА ---
+            } else {
+                mediaModal.querySelector('.modal-footer').textContent = media.footerText || '';
+                let contentElement;
+                if (media.type === 'photo') contentElement = modalPhoto;
+                if (media.type === 'video') contentElement = modalVideo;
+                if (media.type === 'audio') contentElement = modalAudio;
+                if (media.type === 'text') contentElement = modalText;
+        
+                if (contentElement) {
+                    if (media.type === 'text') {
+                        contentElement.innerHTML = '<em>Загрузка...</em>';
+                        fetch(media.url).then(res => res.text()).then(text => contentElement.innerHTML = text).catch(err => contentElement.innerHTML = '<strong>Ошибка загрузки.</strong>');
+                    } else {
+                        contentElement.src = media.url;
+                    }
+                    contentElement.style.display = 'block';
+                    if (media.type === 'video' || media.type === 'audio') {
+                        contentElement.play();
+                    }
                 }
             }
+        
             mediaModal.style.display = 'flex';
         }
         const bookingModal = document.getElementById('bookingModal');
@@ -838,6 +927,7 @@
     </script>
 </body>
 </html>
+
 
 
 
