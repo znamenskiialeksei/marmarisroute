@@ -177,7 +177,7 @@
             flex-direction: column;
         }
         .modal-content { display: none; max-width: 90%; max-height: 80%; width: auto; height: auto; border-radius: 4px; }
-        #modalIframe, #carouselIframe { width: 90%; height: 80%; max-width: 1280px; aspect-ratio: 16 / 9; border-radius: 8px; background-color: #000; }
+        #modalIframe { width: 90%; height: 80%; max-width: 1280px; aspect-ratio: 16 / 9; border-radius: 8px; background-color: #000; }
         #modalText { background-color: #fff; padding: 25px; color: #333; overflow-y: auto; line-height: 1.6; }
         .modal-close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001; }
         .modal-header, .modal-footer { color: white; text-align: center; padding: 5px 15px; max-width: 90%; box-sizing: border-box; font-size: clamp(0.8rem, 2vw, 1.1em); }
@@ -198,28 +198,27 @@
         .nav-btn { background: #757575; width: 40px; height: 40px; font-size: 20px; }
         #bookingBtn { background: #4CAF50; width: 40px; height: 40px; font-size: 20px; }
         #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; min-width: 50px; text-align: center; }
+
+        /* --- ФИНАЛЬНЫЕ СТИЛИ ДЛЯ IFRAME-КАРУСЕЛИ --- */
         #modalCarousel {
             display: flex;
-            flex-direction: row; /* На компьютере: элементы в ряд */
-            justify-content: center;
+            flex-direction: row;
+            justify-content: space-between;
             align-items: center;
             width: 95%;
+            max-width: 1280px;
             height: 90%;
-            gap: 15px; /* Отступ между стрелками и контентом */
+            gap: 15px;
         }
-        
-        /* 2. Iframe для контента (фото/видео) */
         #carouselIframe {
-            flex-grow: 1; /* Iframe занимает всё свободное место */
-            width: 100%;  /* Растягивается на доступную ширину */
-            height: 100%; /* Растягивается на доступную высоту */
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
             border: none;
             border-radius: 8px;
         }
-        
-        /* 3. Стрелки навигации */
         .carousel-nav {
-            flex-shrink: 0; /* Запрещаем стрелкам сжиматься */
+            flex-shrink: 0;
             background: rgba(0,0,0,0.5);
             border: none;
             color: white;
@@ -233,61 +232,37 @@
         .carousel-nav:hover {
             background: rgba(0,0,0,0.8);
         }
-        
-        /* 4. Адаптация для мобильных устройств */
+        /* Адаптация для мобильных устройств */
         @media (max-width: 768px) {
             #modalCarousel {
-                flex-direction: column; /* На мобильных: элементы друг под другом */
+                flex-direction: column;
                 gap: 10px;
             }
-        
             #carouselIframe {
-                order: 1; /* Контент будет первым (сверху) */
-                width: 100%; /* На всю ширину контейнера */
-                height: 80%; /* Занимает большую часть высоты */
+                order: 1;
+                width: 100%;
+                height: 80%;
             }
-        
             .carousel-nav {
-                order: 2; /* Блок со стрелками будет вторым (снизу) */
+                order: 2;
                 width: 80%;
                 height: auto;
                 display: flex;
                 justify-content: space-between;
-                background: none; /* Убираем фон у общего блока стрелок */
+                background: none;
+                margin-top: 15px;
             }
-        
-            /* Стили для самих кнопок-стрелок на мобильных */
             #modalCarousel .carousel-nav.prev,
             #modalCarousel .carousel-nav.next {
                 font-size: 2em;
                 background: rgba(0,0,0,0.4);
-                border-radius: 50%; /* Круглые кнопки */
+                border-radius: 50%;
                 height: 45px;
                 width: 45px;
                 padding: 0;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-            }
-            .carousel-iframe-wrapper {
-                flex-grow: 1; /* Обертка занимает всё доступное место в карусели */
-                width: 100%;
-                height: 100%;
-                overflow: hidden; /* Самое главное: обрезает всё, что выходит за рамки */
-                position: relative;
-                border-radius: 8px;
-                background-color: #000; /* Черный фон на случай, если фото грузится долго */
-            }
-            
-            #carouselIframe {
-                /* Делаем iframe намного больше контейнера и центрируем его */
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                width: 150%;  /* Увеличиваем ширину, чтобы скрыть поля */
-                height: 150%; /* Увеличиваем высоту */
-                transform: translate(-50%, -50%);
-                border: none;
             }
         }
     </style>
@@ -332,13 +307,11 @@
         <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen scrolling="no"></iframe>
         <audio class="modal-content" id="modalAudio" controls></audio>
         
-    <div class="modal-content" id="modalCarousel">
-        <button class="carousel-nav prev">&lt;</button>
-        <div class="carousel-iframe-wrapper">
-        <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"scrolling="no"></iframe>
+        <div class="modal-content" id="modalCarousel">
+            <button class="carousel-nav prev">&lt;</button>
+            <iframe src="" frameborder="0" allowfullscreen id="carouselIframe" scrolling="no"></iframe>
+            <button class="carousel-nav next">&gt;</button>
         </div>
-        <button class="carousel-nav next">&gt;</button>
-    </div>
         
         <div class="modal-footer"></div>
     </div>
@@ -356,10 +329,7 @@
             mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кюмлюбюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/AudioTekstRoute/%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81-%D0%9A%D1%83%D0%BC%D0%BB%D1%83%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
-            
-            // ИСПРАВЛЕНО: Фоновое видео должно быть прямой ссылкой на .mp4 файл
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
-            
             coverVideoFitMode: 'cover',
             coverTexts: [
                 { text: 'Мармарис', tooltip: 'Возможно вы сейчас здесь....', top: '5%', left: '45%', visible: true }
@@ -405,7 +375,7 @@
             pages: [
                 {
                     published: true,
-                    text: `<h2> О маршруте. </h2><p> Название: Маршрут 2. Дневной яхтенный тур под парусом Мармарис-Кумлубюк с обедом на яхте. Продолжительность: 1 день. Время: 9:30 – 18:15. Стоимость: 1000 долларов США (стандартный обед)/1300 долларов США (обед-гриль). Особенности: Эксклюзивный однодневный круиз, сочетающий панорамные виды побережья, долгий отдых с купанием в живописной бухте Кумлубюк и изысканный обед, приготовленный для вас прямо на борту яхты.</p>`,
+                    text: `<h2> О маршруте. </h2><p>...</p>`,
                     narrationEndTime: 32,
                     mainVideo: {
                         url: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -437,7 +407,7 @@
                         { 
                             type: 'iframe',
                             buttonText: 'Фото Кумлубюка', 
-                            url: 'https://1drv.ms/u/c/2919ff56cb24dc70/IQTJBefQdViIRriNcZhvIn1QAYxbfuZ648tAj31jCQcvarA',
+                            url: 'https://1drv.ms/u/c/2919ff56cb24dc70/IQTJBefQdViIRriNcZhvIn1QAYxbfuZ648tAj31jCQcvarA?action=embedview',
                             headerText: 'Фото Кумлубюка', 
                             footerText: 'Панорама' 
                         },
@@ -754,7 +724,6 @@
             mediaModal.querySelector('.modal-header').textContent = media.headerText || '';
             mediaModal.querySelector('.modal-footer').textContent = ''; 
             
-            // ИЗМЕНЕНИЕ: Полностью переписанная логика карусели для работы с iframe
             if (media.type === 'carousel' && media.images && media.images.length > 0) {
                 const carouselIframe = document.getElementById('carouselIframe');
                 
