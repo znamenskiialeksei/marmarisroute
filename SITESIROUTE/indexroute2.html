@@ -143,7 +143,7 @@
         }
         .page-buttons-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 15px; flex-shrink: 0; }
         .page-btn { color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 1em; cursor: pointer; transition: background-color 0.3s; }
-        .page-btn.video-btn { background-color: #4285F4; }
+        .page-btn.video-btn, .page-btn.iframe-btn { background-color: #4285F4; } /* ОБЪЕДИНЕННЫЙ СТИЛЬ */
         .page-btn.audio-btn { background-color: #f4b400; }
         .page-btn.photo-btn { background-color: #0F9D58; }
         .page-btn.text-btn { background-color: #673ab7; }
@@ -177,7 +177,7 @@
             flex-direction: column;
         }
         .modal-content { display: none; max-width: 90%; max-height: 80%; width: auto; height: auto; border-radius: 4px; }
-        #modalIframe { width: 90%; height: 80%; aspect-ratio: 16 / 9; } /* Стили для iframe */
+        #modalIframe { width: 90%; height: 80%; max-width: 1280px; aspect-ratio: 16 / 9; } /* Стили для iframe */
         #modalText { background-color: #fff; padding: 25px; color: #333; overflow-y: auto; line-height: 1.6; }
         .modal-close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; z-index: 1001; }
         .modal-header, .modal-footer { color: white; text-align: center; padding: 5px 15px; max-width: 90%; box-sizing: border-box; font-size: clamp(0.8rem, 2vw, 1.1em); }
@@ -287,7 +287,7 @@
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const CONFIG = {
-            mainTitle: 'Маршрут 2.1 Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кюмлюбюк с обедом на яхте.',
+            mainTitle: 'Маршрут 2. Дневной яхтенный тур под парусом Мармарис Яхт Марина-Кюмлюбюк с обедом на яхте.',
             audioUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/AudioTekstRoute/%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81-%D0%9A%D1%83%D0%BC%D0%BB%D1%83%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp3',
             bookingUrl: 'https://script.google.com/macros/s/AKfycbw_zW9cCs6adluPNaVVm6spv16UwmQ4vAvvFSo5cenzsE8kpJnBAyktHy4zZaIeac_-VA/exec?page=route2',
             coverVideoUrl: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/VideoRoute/route-%D0%9C%D0%B0%D1%80%D1%88%D1%80%D1%83%D1%82%202.%20%D0%94%D0%BD%D0%B5%D0%B2%D0%BD%D0%BE%D0%B9%20%D1%8F%D1%85%D1%82%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9%20%D1%82%D1%83%D1%80%20%D0%BF%D0%BE%D0%B4%20%D0%BF%D0%B0%D1%80%D1%83%D1%81%D0%BE%D0%BC%20%D0%9C%D0%B0%D1%80%D0%BC%D0%B0%D1%80%D0%B8%D1%81%20%D0%AF%D1%85%D1%82%20%D0%9C%D0%B0%D1%80%D0%B8%D0%BD%D0%B0-%D0%9A%D1%8E%D0%BC%D0%BB%D1%8E%D0%B1%D1%8E%D0%BA%20%D1%81%20%D0%BE%D0%B1%D0%B5%D0%B4%D0%BE%D0%BC%20%D0%BD%D0%B0%20%D1%8F%D1%85%D1%82%D0%B5..mp4',
@@ -350,7 +350,7 @@
                     narrationEndTime: 120,
                     mainVideo: { 
                         type: 'iframe',
-                        url: '<https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', // <-- ЗАМЕНИТЕ ЭТУ ССЫЛКУ
+                        url: 'https://1drv.ms/v/c/2919ff56cb24dc70/IQSe6WT-_Nt4QYem_P3qEx_3Abn7W0p9009H02uPVTxShdI', // <-- ВАША ССЫЛКА
                         headerText: 'Видео: Выход из Мармарис Яхт Марины',
                         footerText: ''
                     },
@@ -366,11 +366,12 @@
                     narrationEndTime: 290,
                     extraMedia: [
                         { 
-                            type: 'iframe', // ВАЖНО: тип тоже iframe
+                            type: 'iframe',
                             buttonText: 'Фото Кумлубюка', 
-                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?width=1513&height=951', // <-- Вставьте сюда
+                            url: 'https://1drv.ms/i/c/2919ff56cb24dc70/IQS4SlSP1EukT49NhIfzIy6sAcsaeHHgAgI8L_4fZWN5eek?width=1513&height=951', // <-- ВАША ССЫЛКА
                             headerText: 'Фото Кумлубюка', 
                             footerText: 'Панорама' 
+                        }, // <-- ИСПРАВЛЕНИЕ: ДОБАВЛЕНА ЗАПЯТАЯ
                         { type: 'text', buttonText: 'Меню в Мармарис Яхт марине', url: 'https://raw.githubusercontent.com/znamenskiialeksei/marmarisroute/main/README.md', headerText: 'Меню на вечер', footerText: '' }
                     ],
                 },
@@ -410,7 +411,7 @@
             ]
         };
         
-        // --- ДАЛЕЕ СЛЕДУЕТ ИСПОЛНЯЕМЫЙ КОД, КОТОРЫЙ НЕ ТРЕБУЕТ РЕДАКТИРОВАНИЯ ---
+        // --- ДАЛЕЕ СЛЕДУЕТ ИСПОЛНЯЕМЫЙ КОД ---
         
         const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true';
         const adminErrors = [];
@@ -561,8 +562,8 @@
                 buttonsContainer.className = 'page-buttons-container';
                 
                 const allMedia = [];
-                // ---> ИЗМЕНЕНИЕ: Проверяем тип 'iframe' в mainVideo <---
                 if (pageData.mainVideo && pageData.mainVideo.url) {
+                    // ИСПРАВЛЕНИЕ: Правильно определяем тип, если он не указан
                     allMedia.push({ ...pageData.mainVideo, type: pageData.mainVideo.type || 'video', buttonText: 'Показать видео' });
                 }
                 if (pageData.extraMedia) {
@@ -573,7 +574,9 @@
                     const hasUrl = (media.type === 'carousel' && media.images && media.images.length > 0) || (media.url && media.url.trim() !== '');
                     if (hasUrl) {
                         const btn = document.createElement('button');
-                        btn.className = `page-btn ${media.type}-btn`;
+                        // ИСПРАВЛЕНИЕ: Добавляем класс iframe-btn для единообразия стиля
+                        const btnClass = (media.type === 'iframe') ? 'iframe-btn' : `${media.type}-btn`;
+                        btn.className = `page-btn ${btnClass}`;
                         btn.textContent = media.buttonText;
                         btn.onclick = () => openMediaModal(media);
                         buttonsContainer.appendChild(btn);
@@ -668,7 +671,6 @@
         let currentCarouselIndex = 0;
 
         function openMediaModal(media) {
-            // ---> ИЗМЕНЕНИЕ: Добавляем modalIframe в список скрываемых элементов <---
             [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
                 el.style.display = 'none';
                 if(el.tagName === 'VIDEO' || el.tagName === 'AUDIO') { el.src = ''; el.pause(); } 
@@ -709,7 +711,6 @@
             } else {
                 mediaModal.querySelector('.modal-footer').textContent = media.footerText || '';
                 
-                // ---> ИЗМЕНЕНИЕ: Полностью переписанная логика для выбора контента <---
                 let contentElement;
 
                 if (media.type === 'iframe') {
@@ -718,11 +719,9 @@
                 } else if (media.type === 'photo') {
                     contentElement = modalPhoto;
                 } else if (media.type === 'video') {
-                    // Проверяем, является ли ссылка YouTube
                     if (media.url.includes('youtu.be') || media.url.includes('youtube.com')) {
                         const videoId = media.url.split('v=')[1] || media.url.split('/').pop();
                         const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                        // Создаем новый iframe для YouTube, чтобы не конфликтовать с modalIframe
                         const youtubeIframe = document.createElement('iframe');
                         youtubeIframe.src = embedUrl;
                         youtubeIframe.className = 'modal-content';
@@ -730,11 +729,10 @@
                         youtubeIframe.style.aspectRatio = '16/9';
                         youtubeIframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
                         youtubeIframe.allowFullscreen = true;
-                        
-                        mediaModal.insertBefore(youtubeIframe, modalCarousel); // Вставляем его в модальное окно
-                        contentElement = youtubeIframe; // Считаем его нашим контентом
+                        mediaModal.insertBefore(youtubeIframe, modalCarousel);
+                        contentElement = youtubeIframe;
                     } else {
-                        contentElement = modalVideo; // Обычное видео
+                        contentElement = modalVideo;
                     }
                 } else if (media.type === 'audio') {
                     contentElement = modalAudio;
@@ -765,7 +763,6 @@
         function closeModal(modal) {
             modal.style.display = 'none';
             if (modal.id === 'mediaModal') {
-                // ---> ИЗМЕНЕНИЕ: Добавляем modalIframe в список очищаемых элементов <---
                 [modalPhoto, modalVideo, modalAudio, modalText, modalCarousel, modalIframe].forEach(el => {
                     el.style.display = 'none';
                     if (el.tagName === 'VIDEO' || el.tagName === 'AUDIO') {
@@ -775,7 +772,6 @@
                         el.src = '';
                     }
                 });
-                // Удаляем динамически созданный iframe для YouTube, если он есть
                 const oldYoutubeIframe = mediaModal.querySelector('iframe:not(#modalIframe)');
                 if (oldYoutubeIframe) {
                     oldYoutubeIframe.remove();
@@ -873,6 +869,7 @@
     </script>
 </body>
 </html>
+
 
 
 
