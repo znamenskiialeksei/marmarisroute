@@ -200,13 +200,26 @@
         #pageIndicator { font-size: 1.2em; font-weight: bold; color: #333; min-width: 50px; text-align: center; }
         #modalCarousel {
             display: flex;
-            justify-content: space-between;
+            flex-direction: row; /* На компьютере: элементы в ряд */
+            justify-content: center;
             align-items: center;
             width: 95%;
-            max-width: 1000px;
             height: 90%;
+            gap: 15px; /* Отступ между стрелками и контентом */
         }
+        
+        /* 2. Iframe для контента (фото/видео) */
+        #carouselIframe {
+            flex-grow: 1; /* Iframe занимает всё свободное место */
+            width: 100%;  /* Растягивается на доступную ширину */
+            height: 100%; /* Растягивается на доступную высоту */
+            border: none;
+            border-radius: 8px;
+        }
+        
+        /* 3. Стрелки навигации */
         .carousel-nav {
+            flex-shrink: 0; /* Запрещаем стрелкам сжиматься */
             background: rgba(0,0,0,0.5);
             border: none;
             color: white;
@@ -220,45 +233,43 @@
         .carousel-nav:hover {
             background: rgba(0,0,0,0.8);
         }
-        /* --- МОБИЛЬНАЯ АДАПТАЦИЯ КАРУСЕЛИ --- */
-         @media (max-width: 768px) {
-         #modalCarousel {
-            flex-direction: column; /* Располагаем элементы друг под другом */
-            justify-content: center; /* Центрируем по вертикали */
         
+        /* 4. Адаптация для мобильных устройств */
+        @media (max-width: 768px) {
+            #modalCarousel {
+                flex-direction: column; /* На мобильных: элементы друг под другом */
+                gap: 10px;
+            }
+        
+            #carouselIframe {
+                order: 1; /* Контент будет первым (сверху) */
+                width: 100%; /* На всю ширину контейнера */
+                height: 80%; /* Занимает большую часть высоты */
+            }
+        
+            .carousel-nav {
+                order: 2; /* Блок со стрелками будет вторым (снизу) */
+                width: 80%;
+                height: auto;
+                display: flex;
+                justify-content: space-between;
+                background: none; /* Убираем фон у общего блока стрелок */
+            }
+        
+            /* Стили для самих кнопок-стрелок на мобильных */
+            #modalCarousel .carousel-nav.prev,
+            #modalCarousel .carousel-nav.next {
+                font-size: 2em;
+                background: rgba(0,0,0,0.4);
+                border-radius: 50%; /* Круглые кнопки */
+                height: 45px;
+                width: 45px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
         }
-
-         #carouselIframe {
-            width: 95%; /* iframe занимает почти всю ширину */
-            height: 70%; /* и большую часть высоты */
-            order: 1; /* iframe будет первым (сверху) */
-        }
-
-        .carousel-nav {
-            order: 2; /* стрелки будут вторыми (снизу) */
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 80%; /* ширина блока со стрелками */
-            height: auto; /* убираем фиксированную высоту */
-            background: none; /* убираем фон у контейнера */
-            margin-top: 15px; /* отступ сверху */
-        }
-
-          /* Стили для самих кнопок-стрелок */
-        #modalCarousel .carousel-nav.prev,
-        #modalCarousel .carousel-nav.next {
-            font-size: 2.5em; /* уменьшаем размер стрелок */
-            padding: 5px 15px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 50%; /* делаем их круглыми */
-            height: 50px;
-            width: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-      }
     </style>
 </head>
 <body>
@@ -303,7 +314,7 @@
         
         <div class="modal-content" id="modalCarousel">
             <button class="carousel-nav prev">&lt;</button>
-            <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"scrolling="no"></iframe>
+            <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"></iframe>
             <button class="carousel-nav next">&gt;</button>
         </div>
         
@@ -916,6 +927,7 @@
     </script>
 </body>
 </html>
+
 
 
 
