@@ -221,43 +221,44 @@
             background: rgba(0,0,0,0.8);
         }
         /* --- МОБИЛЬНАЯ АДАПТАЦИЯ КАРУСЕЛИ --- */
-@media (max-width: 768px) {
-    #modalCarousel {
-        flex-direction: column; /* Располагаем элементы друг под другом */
-        justify-content: center; /* Центрируем по вертикали */
-    }
+         @media (max-width: 768px) {
+         #modalCarousel {
+            flex-direction: column; /* Располагаем элементы друг под другом */
+            justify-content: center; /* Центрируем по вертикали */
+        
+        }
 
-    #carouselIframe {
-        width: 95%; /* iframe занимает почти всю ширину */
-        height: 70%; /* и большую часть высоты */
-        order: 1; /* iframe будет первым (сверху) */
-    }
+         #carouselIframe {
+            width: 95%; /* iframe занимает почти всю ширину */
+            height: 70%; /* и большую часть высоты */
+            order: 1; /* iframe будет первым (сверху) */
+        }
 
-    .carousel-nav {
-        order: 2; /* стрелки будут вторыми (снизу) */
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 80%; /* ширина блока со стрелками */
-        height: auto; /* убираем фиксированную высоту */
-        background: none; /* убираем фон у контейнера */
-        margin-top: 15px; /* отступ сверху */
-    }
+        .carousel-nav {
+            order: 2; /* стрелки будут вторыми (снизу) */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 80%; /* ширина блока со стрелками */
+            height: auto; /* убираем фиксированную высоту */
+            background: none; /* убираем фон у контейнера */
+            margin-top: 15px; /* отступ сверху */
+        }
 
-    /* Стили для самих кнопок-стрелок */
-    #modalCarousel .carousel-nav.prev,
-    #modalCarousel .carousel-nav.next {
-        font-size: 2.5em; /* уменьшаем размер стрелок */
-        padding: 5px 15px;
-        background: rgba(0,0,0,0.4);
-        border-radius: 50%; /* делаем их круглыми */
-        height: 50px;
-        width: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-}
+          /* Стили для самих кнопок-стрелок */
+        #modalCarousel .carousel-nav.prev,
+        #modalCarousel .carousel-nav.next {
+            font-size: 2.5em; /* уменьшаем размер стрелок */
+            padding: 5px 15px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 50%; /* делаем их круглыми */
+            height: 50px;
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+      }
     </style>
 </head>
 <body>
@@ -297,12 +298,12 @@
         <div class="modal-content" id="modalText"></div>
         <img class="modal-content" id="modalPhoto" alt="Изображение">
         <video class="modal-content" id="modalVideo" controls playsinline></video>
-        <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen></iframe>
+        <iframe class="modal-content" id="modalIframe" frameborder="0" allowfullscreen scrolling="no"></iframe>
         <audio class="modal-content" id="modalAudio" controls></audio>
         
         <div class="modal-content" id="modalCarousel">
             <button class="carousel-nav prev">&lt;</button>
-            <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"></iframe>
+            <iframe src="" frameborder="0" allowfullscreen id="carouselIframe"scrolling="no"></iframe>
             <button class="carousel-nav next">&gt;</button>
         </div>
         
@@ -915,6 +916,7 @@
     </script>
 </body>
 </html>
+
 
 
 
